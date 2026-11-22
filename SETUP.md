@@ -28,7 +28,7 @@ Files: `Code.gs` (backend, repo root). Frontend lives in `docs/`: `index.html`, 
 ## 5. First run
 1. Open your link, enter your admin email, type the 6-digit code from your inbox.
 2. My family, Turn on notifications. On iPhone first: Safari, Share, Add to Home Screen, open from the icon.
-3. Admin, Homes: rename the two placeholder homes and pick colours. Admin, Families: add families and members (add both owners as admins here). Each person gets a welcome email. Share the link.
+3. Admin, Homes: rename the two placeholder homes, add their address, upload a photo and pick colours (add more homes here too if needed - the first photo upload will trigger a one-off Google Drive permission prompt, same as step 1.5). Admin, Families: add families and members (add both owners as admins here). Each person gets a welcome email. Share the link.
 
 ## Faster re-deploys (clasp, optional)
 Once the script exists (step 1), you can skip re-pasting into the Apps Script editor for future `Code.gs` changes:
