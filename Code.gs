@@ -6,7 +6,7 @@
 
 // ---- EDIT THESE ----
 const ADMIN_EMAIL = 'gdoyle2@gmail.com';                // first admin (lowercase)
-const APP_URL = 'https://USERNAME.github.io/REPO/';     // where the frontend is hosted
+const APP_URL = 'https://gavindoyle-ei.github.io/mcgrath-holiday-home/';     // where the frontend is hosted
 const APP_NAME = 'Family Holiday Homes';
 const MAX_NIGHTS = 60;
 // --------------------
