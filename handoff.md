@@ -15,12 +15,13 @@ A private website for the McGrath family where admins can see two holiday homes 
 - New-request alerts go to every admin. Decision emails (approve/decline) name the deciding admin and set Reply-To to them, since all mail physically sends from the one deploying Gmail account.
 
 ## Requirements (all implemented)
-- Two homes (renamable, more can be added), calendar with 6 and 12 month views on the landing page, plus list view and per-home filter.
+- Two homes to start (renamable, admins can add/remove more any time), each with a name, address, photo and calendar colour. Calendar with 6 and 12 month views on the landing page, plus list view and per-home filter; selecting one home shows its photo/address/notes above the calendar (its "dedicated calendar" view).
 - Families contain several adult members, each with their own email. A member can only book for their own family.
-- Admins can add, rename and remove families, add and remove members, promote and demote admins (last admin is protected), manage homes, approve or decline requests, cancel stays, and book on behalf of a family.
+- Admins can add, rename and remove families, add and remove members, promote and demote admins (last admin is protected), manage homes (name, address, photo, colour, notes), approve or decline requests, cancel stays, and book on behalf of a family.
 - Emails: welcome, request confirmation, admin alert on request, decision email to requester and their family, cancellation notices.
 - Push: same events, opt-in per device, email is the fallback and the record.
 - No weekly digest (the landing page replaces it).
+- Property photos: admin picks an image file in the browser; it's resized/compressed client-side (max 1600px, JPEG) then stored in a "Holiday Homes photos" Google Drive folder owned by the deploying account (free, no card - see Gotchas for the Drive permission prompt this causes).
 
 ## Architecture
 ```
@@ -63,3 +64,4 @@ Browser PWA (GitHub Pages, /docs)  --POST text/plain JSON-->  Apps Script web ap
 - Never commit the service account JSON. The Firebase web config and the script URL are public by design.
 - Frontend lives in `docs/` so GitHub Pages (deployed from `/docs`) never serves `Code.gs`.
 - Keep all sheet writes going through `put_` and `del_` (they keep cells as text). Do not write dates with raw `setValue`.
+- Saving a property photo calls `DriveApp` for the first time, so the admin will see a one-off Google permission prompt (Advanced, then "Go to project") the first time they upload one, same as the initial `setup` run. Photos live in a "Holiday Homes photos" Drive folder; deleting a property or replacing its photo trashes the old file so it doesn't accumulate.

@@ -5,7 +5,7 @@
  */
 
 // ---- EDIT THESE ----
-const ADMIN_EMAIL = 'you@gmail.com';                    // first admin (lowercase)
+const ADMIN_EMAIL = 'gdoyle2@gmail.com';                // first admin (lowercase)
 const APP_URL = 'https://USERNAME.github.io/REPO/';     // where the frontend is hosted
 const APP_NAME = 'Family Holiday Homes';
 const MAX_NIGHTS = 60;
@@ -14,7 +14,7 @@ const MAX_NIGHTS = 60;
 const TABS = {
   Families:   ['id', 'name'],
   Members:    ['email', 'name', 'familyId', 'role', 'added'],
-  Properties: ['id', 'name', 'color', 'notes'],
+  Properties: ['id', 'name', 'color', 'notes', 'address', 'photo', 'photoFileId'],
   Bookings:   ['id', 'propertyId', 'familyId', 'by', 'start', 'end', 'guests', 'note', 'status', 'adminNote', 'created', 'decidedBy'],
   Tokens:     ['token', 'email', 'added']
 };
@@ -39,8 +39,8 @@ function setup() {
     const fid = id_();
     put_('Families', 'id', { id: fid, name: 'My family' });
     put_('Members', 'email', { email: ADMIN_EMAIL.toLowerCase(), name: 'Admin', familyId: fid, role: 'admin', added: today_() });
-    put_('Properties', 'id', { id: id_(), name: 'Property 1', color: '#1f7a8c', notes: '' });
-    put_('Properties', 'id', { id: id_(), name: 'Property 2', color: '#c9822b', notes: '' });
+    put_('Properties', 'id', { id: id_(), name: 'Property 1', color: '#1f7a8c', notes: '', address: '', photo: '', photoFileId: '' });
+    put_('Properties', 'id', { id: id_(), name: 'Property 2', color: '#c9822b', notes: '', address: '', photo: '', photoFileId: '' });
   }
   Logger.log('Setup done. Now deploy as a web app.');
 }
@@ -349,12 +349,24 @@ const ACTIONS = {
     const name = String(b.name || '').trim();
     if (!name) throw E('Enter a property name.');
     const color = /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : '#1f7a8c';
-    put_('Properties', 'id', { id: b.id || id_(), name: name.slice(0, 60), color: color, notes: String(b.notes || '').slice(0, 300) });
+    const existing = rows_('Properties').find(p => p.id === b.id) || { photo: '', photoFileId: '' };
+    let photo = existing.photo, photoFileId = existing.photoFileId;
+    if (b.removePhoto && photoFileId) { trashDriveFile_(photoFileId); photo = ''; photoFileId = ''; }
+    if (b.photoData) {
+      const saved = savePhoto_(b.photoData, photoFileId, name);
+      photo = saved.url; photoFileId = saved.fileId;
+    }
+    put_('Properties', 'id', {
+      id: b.id || id_(), name: name.slice(0, 60), color: color, notes: String(b.notes || '').slice(0, 300),
+      address: String(b.address || '').slice(0, 200), photo: photo, photoFileId: photoFileId
+    });
   },
   removeProperty(me, b) {
     needAdmin_(me);
     if (rows_('Bookings').some(x => x.propertyId === b.id)) throw E('This property has bookings, so it can’t be deleted. Rename it instead.');
     if (rows_('Properties').length <= 1) throw E('Keep at least one property.');
+    const p = rows_('Properties').find(x => x.id === b.id);
+    if (p && p.photoFileId) trashDriveFile_(p.photoFileId);
     del_('Properties', 'id', b.id);
   },
 
@@ -372,6 +384,30 @@ const ACTIONS = {
     if (!push_([me.email], APP_NAME, 'Push notifications are working.')) throw E('No device is registered for push yet.');
   }
 };
+
+/* ============ PROPERTY PHOTOS (Google Drive, free, no card) ============ */
+const PHOTO_FOLDER_NAME = 'Holiday Homes photos';
+function photoFolder_() {
+  const it = DriveApp.getFoldersByName(PHOTO_FOLDER_NAME);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(PHOTO_FOLDER_NAME);
+}
+function trashDriveFile_(fileId) {
+  try { DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { /* already gone - fine */ }
+}
+/** data is a data: URL ("data:image/jpeg;base64,...") from the browser, already resized client-side. */
+function savePhoto_(dataUrl, oldFileId, baseName) {
+  const m = /^data:(image\/[a-zA-Z+.-]+);base64,(.*)$/.exec(String(dataUrl || ''));
+  if (!m) throw E('Could not read that photo. Try a different image.');
+  const mime = m[1], b64 = m[2];
+  if (b64.length > 8 * 1024 * 1024) throw E('That photo is too large. Try a smaller image.');
+  const bytes = Utilities.base64Decode(b64);
+  const ext = (mime.split('/')[1] || 'jpg').replace(/[^a-z0-9]/gi, '');
+  const blob = Utilities.newBlob(bytes, mime, baseName.replace(/[^\w -]/g, '').slice(0, 40) + '.' + ext);
+  const file = photoFolder_().createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  if (oldFileId) trashDriveFile_(oldFileId);
+  return { url: 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w1000', fileId: file.getId() };
+}
 
 /* ============ EMAIL ============ */
 function tpl_(heading, bodyHtml, button) {

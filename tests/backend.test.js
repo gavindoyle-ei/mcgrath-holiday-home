@@ -1,5 +1,11 @@
 const fs=require('fs'),crypto=require('crypto'),vm=require('vm');
 const sheets={}; const props={SS_ID:'x',SECRET:'s3cret'}; const cache={}; const mails=[];
+const driveFiles={}; const driveFolders={}; let driveSeq=0;
+const mkFolder=name=>({n:name,createFile:blob=>{const id='drive'+(++driveSeq);const file={getId:()=>id,setSharing:()=>file,setTrashed:t=>{file.trashed=!!t}};driveFiles[id]=file;return file;}});
+const DriveApp={Access:{ANYONE_WITH_LINK:'anyone'},Permission:{VIEW:'view'},
+ getFoldersByName:name=>{const arr=driveFolders[name]?[driveFolders[name]]:[];let i=0;return {hasNext:()=>i<arr.length,next:()=>arr[i++]};},
+ createFolder:name=>{const f=mkFolder(name);driveFolders[name]=f;return f;},
+ getFileById:id=>{if(!driveFiles[id])throw new Error('not found');return driveFiles[id];}};
 const mkSheet=n=>({n,data:[],getDataRange:()=>({getValues:()=>JSON.parse(JSON.stringify(sheets[n].data))}),
  getRange:(r,c,nr,nc)=>{const o={setNumberFormat:()=>o,setFontWeight:()=>o,setValues:v=>{for(let i=0;i<nr;i++){sheets[n].data[r-1+i]=v[i]}return o}};return o},
  getLastRow:()=>sheets[n].data.length,getMaxRows:()=>1000,setFrozenRows(){},
@@ -9,16 +15,18 @@ const ctx={console,Session:{getScriptTimeZone:()=>'Europe/Dublin'},
  PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]||null,setProperty:(k,v)=>props[k]=v})},
  CacheService:{getScriptCache:()=>({get:k=>cache[k]||null,put:(k,v)=>cache[k]=v,remove:k=>delete cache[k]})},
  LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
- MailApp:{sendEmail:m=>mails.push(m)},UrlFetchApp:{},
+ MailApp:{sendEmail:m=>mails.push(m)},UrlFetchApp:{},DriveApp,
  ContentService:{createTextOutput:t=>({setMimeType(){return t}}),MimeType:{JSON:1}},
  Logger:{log(){}},
  Utilities:{getUuid:()=>crypto.randomUUID(),base64EncodeWebSafe:x=>(Buffer.isBuffer(x)||Array.isArray(x)?Buffer.from(x):Buffer.from(x)).toString('base64url')+'==',
-  base64DecodeWebSafe:s=>[...Buffer.from(s.replace(/=+$/,''),'base64url')],newBlob:b=>({getDataAsString:()=>Buffer.from(b).toString()}),
+  base64DecodeWebSafe:s=>[...Buffer.from(s.replace(/=+$/,''),'base64url')],
+  base64Decode:s=>[...Buffer.from(s,'base64')],
+  newBlob:(b,mime,name)=>({getDataAsString:()=>Buffer.from(b).toString(),getBytes:()=>b,getContentType:()=>mime,getName:()=>name}),
   computeHmacSha256Signature:(s,k)=>[...crypto.createHmac('sha256',k).update(s).digest()],
   formatDate:(d,tz,f)=>f==='yyyy-MM-dd'?new Date(d).toISOString().slice(0,10):new Date(d).toDateString()}};
 vm.createContext(ctx);
 let code=fs.readFileSync('' + require('path').join(__dirname,'..','Code.gs') + '','utf8')
- .replace("const ADMIN_EMAIL = 'you@gmail.com'","const ADMIN_EMAIL = 'gav@x.ie'");
+ .replace(/const ADMIN_EMAIL = '[^']*'/,"const ADMIN_EMAIL = 'gav@x.ie'");
 vm.runInContext(code+';this.setup=setup;this.doPost=doPost;',ctx);
 ctx.setup();
 const call=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}));
@@ -53,6 +61,17 @@ const call=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}));
  ok('decision mail names deciding admin',/Admin/.test(decisionMail.htmlBody));
  ok('overlap blocked',/overlap/i.test(call({action:'requestStay',token:t,propertyId:p,start:d(12),end:d(14)}).error||''));
  ok('approval mail to requester',mails.some(m=>/approved/i.test(m.subject)&&m.to.includes('dee@x.ie')));
+ const png='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+ ok('member cannot save property',call({action:'saveProperty',token:t2,id:p,name:'Nope'}).ok===false);
+ ok('save address',call({action:'saveProperty',token:t,id:p,name:'Beach House',color:'#1f7a8c',address:'1 Strand Rd'}).ok);
+ s=call({action:'init',token:t}).state; ok('address stored',s.properties.find(x=>x.id===p).address==='1 Strand Rd');
+ ok('save photo',call({action:'saveProperty',token:t,id:p,name:'Beach House',color:'#1f7a8c',photoData:'data:image/png;base64,'+png}).ok);
+ s=call({action:'init',token:t}).state; const pr1=s.properties.find(x=>x.id===p);
+ ok('photo url set',/drive\.google\.com/.test(pr1.photo));
+ const oldFileId=sheets.Properties.data.find(r=>r[0]===p)[6];
+ ok('save new photo trashes old file',call({action:'saveProperty',token:t,id:p,name:'Beach House',color:'#1f7a8c',photoData:'data:image/png;base64,'+png}).ok&&driveFiles[oldFileId].trashed===true);
+ ok('remove photo',call({action:'saveProperty',token:t,id:p,name:'Beach House',color:'#1f7a8c',removePhoto:true}).ok);
+ s=call({action:'init',token:t}).state; ok('photo cleared',s.properties.find(x=>x.id===p).photo==='');
  const o=call({action:'init',token:t2}).state; ok('member sees only own details',o.bookings[0].guests==='3'&&o.families.length===1);
  ok('cannot remove last admin',call({action:'setRole',token:t,email:'gav@x.ie',role:'member'}).ok===false);
  ok('remove member kills session',call({action:'removeMember',token:t,email:'dee@x.ie'}).ok&&call({action:'init',token:t2}).error==='unauthorized');
