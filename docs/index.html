@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Holiday Homes</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Holiday Homes">
+<meta name="theme-color" content="#12303a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f7;--surface:#fff;--ink:#12303a;--mute:#5d7480;--line:#d9e4e6;--brand:#12303a;--on-brand:#e8f4f2;--accent:#1f7a8c;--danger:#b3412f;--warn:#9a6a10;--ok:#237a4b;--hi:#e8f4f2}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1b20;--surface:#15272e;--ink:#e6f0f1;--mute:#93a9b1;--line:#27404a;--brand:#0b1a1f;--on-brand:#e8f4f2;--accent:#58c1b3;--danger:#e0705e;--warn:#e0a948;--ok:#5cc98d;--hi:#1b3640}}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;margin:0;line-height:1.15}
+header{background:var(--brand);color:var(--on-brand);padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+header h1{font-size:20px}
+header small{opacity:.75;font-size:13px}
+main{max-width:640px;margin:0 auto;padding:14px 14px 24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 12px}
+.card h2{font-size:18px;margin-bottom:8px}
+.muted{color:var(--mute);font-size:14px}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+input[type=checkbox]{width:auto;margin-right:8px}
+input[type=color]{padding:2px;height:42px}
+textarea{min-height:64px;resize:vertical}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 16px;background:var(--brand);color:var(--on-brand);cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.bad{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn.sm{padding:7px 11px;font-size:14px}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.sp{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.chip{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;white-space:nowrap;cursor:pointer;display:flex;gap:6px;align-items:center}
+.chip.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;font-weight:600;border:0;background:var(--surface);color:var(--mute);padding:7px 12px;cursor:pointer}
+.seg button.on{background:var(--brand);color:var(--on-brand)}
+.mon{margin:0 0 18px}
+.mon h3{font-size:17px;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dow{font-style:normal;font-size:11px;text-align:center;color:var(--mute)}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:7px;min-height:52px;padding:3px 3px 4px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;font:inherit;color:var(--ink);text-align:left}
+.day span{font-size:12px;font-weight:600}
+.day.past{opacity:.45}
+.day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.day.sel{background:var(--hi)}
+.bars{display:flex;flex-direction:column;gap:2px}
+.bar{display:block;height:6px;border-radius:3px;background:var(--c)}
+.bar.pending{background:repeating-linear-gradient(135deg,var(--c) 0 3px,transparent 3px 6px);box-shadow:inset 0 0 0 1px var(--c)}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--mute);margin:4px 0 12px;align-items:center}
+.legend .bar{width:26px}
+.stay{border-left:5px solid var(--c);padding-left:10px;margin:0 0 10px}
+.tag{font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;border:1px solid currentColor}
+.tag.approved{color:var(--ok)}.tag.pending{color:var(--warn)}.tag.declined,.tag.cancelled{color:var(--mute)}
+.warn{color:var(--warn);font-size:14px}.err{color:var(--danger);font-size:14px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;font:inherit;font-size:13px;font-weight:600;border:0;background:none;color:var(--mute);padding:12px 4px;position:relative;cursor:pointer}
+nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--accent)}
+nav i{position:absolute;top:6px;margin-left:4px;font-style:normal;background:var(--danger);color:#fff;border-radius:9px;font-size:11px;padding:0 6px}
+#toast{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--brand);color:var(--on-brand);padding:12px 14px;border-radius:10px;z-index:9;display:none;max-width:616px;margin:0 auto}
+#toast.err{background:var(--danger);color:#fff}
+.center{min-height:70vh;display:flex;flex-direction:column;justify-content:center}
+.big{font-size:30px;margin-bottom:6px}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status"></div>
+<script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script>
+const CFG = self.CFG;
+const S = { token: localStorage.getItem('hh_token') || '', st: null, view: 'home', sub: 'requests', mode: 'cal', months: 6,
+  filter: 'all', day: '', step: 'email', loading: !!localStorage.getItem('hh_token'), busy: false, form: {} };
+
+/* ---------- helpers ---------- */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const addDays = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return iso(d); };
+const nn = (a, b) => Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5);
+const fd = (s, y) => new Date(s + 'T12:00:00').toLocaleDateString('en-IE', Object.assign({ weekday: 'short', day: 'numeric', month: 'short' }, y ? { year: 'numeric' } : {}));
+const range = b => fd(b.start) + ' to ' + fd(b.end, true) + ' (' + nn(b.start, b.end) + ' nights)';
+const val = (k, d) => S.form[k] != null ? S.form[k] : (d == null ? '' : d);
+const prop = id => (S.st.properties.find(p => p.id === id) || { name: 'Property', color: '#888' });
+const isAdmin = () => S.st && S.st.me.role === 'admin';
+const clashes = (b, status) => S.st.bookings.filter(x => x.id !== b.id && x.propertyId === b.propertyId && x.status === status && x.start < b.end && b.start < x.end);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = !!(navigator.standalone || matchMedia('(display-mode: standalone)').matches);
+
+let toastTimer;
+function toast(msg, bad) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = bad ? 'err' : ''; t.style.display = 'block';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.display = 'none', 4000);
+}
+
+/* ---------- API ---------- */
+async function api(action, data) {
+  const r = await fetch(CFG.API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ action, token: S.token }, data || {})) });
+  const j = await r.json();
+  if (!j.ok) {
+    if (j.error === 'unauthorized') { logout(true); throw new Error('Please sign in again.'); }
+    throw new Error(j.error);
+  }
+  if (j.state) S.st = j.state;
+  return j;
+}
+async function act(fn, okMsg) {
+  S.busy = true; render();
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { toast(e.message, true); }
+  S.busy = false; render();
+}
+async function refresh() { try { await api('init'); render(); } catch (e) {} }
+function logout(silent) {
+  localStorage.removeItem('hh_token'); S.token = ''; S.st = null; S.step = 'email'; S.loading = false; S.form = {};
+  if (!silent) render(); else render();
+}
+
+/* ---------- push ---------- */
+let onMsgBound = false;
+async function messaging() {
+  if (!firebase.apps.length) firebase.initializeApp(CFG.FIREBASE);
+  if (!(await firebase.messaging.isSupported())) throw new Error('This browser doesn’t support push notifications.');
+  return firebase.messaging();
+}
+async function registerPush() {
+  const m = await messaging();
+  const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+  await navigator.serviceWorker.ready;
+  const t = await m.getToken({ vapidKey: CFG.VAPID, serviceWorkerRegistration: reg });
+  if (!t) throw new Error('Couldn’t get a push token.');
+  localStorage.setItem('hh_push', t);
+  await api('saveToken', { pushToken: t });
+  if (!onMsgBound) { onMsgBound = true; m.onMessage(p => { const d = p.data || {}; toast((d.title || '') + ': ' + (d.body || '')); refresh(); }); }
+}
+async function enablePush() {
+  if (isIOS && !standalone) throw new Error('On iPhone, add this app to your Home Screen and open it from the icon first.');
+  if (!('Notification' in window)) throw new Error('This browser doesn’t support notifications.');
+  const p = await Notification.requestPermission();
+  if (p !== 'granted') throw new Error('Notifications are blocked. Allow them in your phone’s settings for this app.');
+  await registerPush();
+}
+async function disablePush() {
+  const t = localStorage.getItem('hh_push');
+  if (t) { await api('removeToken', { pushToken: t }); localStorage.removeItem('hh_push'); }
+}
+async function syncPush() { // silently keep this device’s token fresh
+  try { if ('Notification' in window && Notification.permission === 'granted' && localStorage.getItem('hh_push')) await registerPush(); } catch (e) {}
+}
+
+/* ---------- actions ---------- */
+const A = {
+  nav: d => { S.view = d.v; S.day = ''; },
+  sub: d => { S.sub = d.v; },
+  mode: d => { S.mode = d.v; },
+  months: d => { S.months = +d.v; },
+  filter: d => { S.filter = d.v; S.day = ''; },
+  day: d => { S.day = S.day === d.d ? '' : d.d; },
+  sendCode: () => act(async () => {
+    const email = (val('email')).trim();
+    if (!email) throw new Error('Enter your email address.');
+    await api('requestCode', { email }); S.step = 'code';
+  }, 'Code sent. Check your email.'),
+  verify: () => act(async () => {
+    const j = await api('verifyCode', { email: val('email').trim(), code: val('code').trim() });
+    S.token = j.token; localStorage.setItem('hh_token', j.token); S.form = {};
+    await api('init'); syncPush();
+  }),
+  back: () => { S.step = 'email'; },
+  logout: () => logout(),
+  request: () => act(async () => {
+    const f = S.form, p = f.pid || S.st.properties[0].id;
+    const body = { propertyId: p, start: f.start, end: f.end, guests: f.guests, note: f.note };
+    if (isAdmin()) { body.familyId = f.fam || S.st.me.familyId; body.approveNow = !!f.now; }
+    await api('requestStay', body);
+    S.form = {}; S.view = isAdmin() && body.approveNow ? 'home' : 'family';
+  }, isAdmin() && S.form.now ? 'Stay booked.' : 'Request sent. You’ll get an email once an admin decides.'),
+  cancel: d => { if (confirm('Cancel this stay?')) act(() => api('cancelBooking', { id: d.id }), 'Stay cancelled.'); },
+  decide: d => act(() => api('decide', { id: d.id, decision: d.dec, note: val('note_' + d.id) }), d.dec === 'approve' ? 'Approved. The family has been told.' : 'Declined. The family has been told.'),
+  addFamily: () => act(async () => { await api('addFamily', { name: val('newFam') }); delete S.form.newFam; }, 'Family added.'),
+  renameFamily: d => { const n = prompt('New family name', d.name); if (n) act(() => api('renameFamily', { id: d.id, name: n }), 'Renamed.'); },
+  removeFamily: d => { if (confirm('Remove ' + d.name + ', all its members, and cancel its upcoming stays?')) act(() => api('removeFamily', { id: d.id }), 'Family removed.'); },
+  addMember: d => act(async () => {
+    await api('addMember', { familyId: d.f, name: val('mn_' + d.f), email: val('me_' + d.f), role: val('mr_' + d.f) ? 'admin' : 'member' });
+    ['mn_', 'me_', 'mr_'].forEach(k => delete S.form[k + d.f]);
+  }, 'Member added. A welcome email is on its way.'),
+  removeMember: d => { if (confirm('Remove ' + d.name + '?')) act(() => api('removeMember', { email: d.email }), 'Member removed.'); },
+  setRole: d => act(() => api('setRole', { email: d.email, role: d.role }), 'Role updated.'),
+  welcome: d => act(() => api('resendWelcome', { email: d.email }), 'Welcome email sent.'),
+  saveProp: d => act(async () => {
+    const id = d.id === 'new' ? '' : d.id, p = id ? prop(id) : { name: '', color: '#1f7a8c', notes: '' };
+    await api('saveProperty', { id, name: val('pn_' + d.id, p.name), color: val('pc_' + d.id, p.color), notes: val('pt_' + d.id, p.notes) });
+    ['pn_', 'pc_', 'pt_'].forEach(k => delete S.form[k + d.id]);
+  }, 'Property saved.'),
+  delProp: d => { if (confirm('Delete this property?')) act(() => api('removeProperty', { id: d.id }), 'Property deleted.'); },
+  pushOn: () => act(enablePush, 'Notifications are on for this device.'),
+  pushOff: () => act(disablePush, 'Notifications are off for this device.'),
+  pushTest: () => act(() => api('testPush'), 'Test sent.')
+};
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-a]');
+  if (!t || t.disabled) return;
+  const r = A[t.dataset.a](t.dataset);
+  if (!(r && r.then) && !['request', 'sendCode', 'verify'].includes(t.dataset.a)) render();
+});
+function setField(e) {
+  const el = e.target; if (!el.dataset.f) return;
+  S.form[el.dataset.f] = el.type === 'checkbox' ? el.checked : el.value;
+  if (e.type === 'change' && el.dataset.r) {
+    const f = S.form;
+    if (el.dataset.f === 'start' && f.start && (!f.end || f.end <= f.start)) f.end = addDays(f.start, 1);
+    render();
+  }
+}
+document.addEventListener('input', setField);
+document.addEventListener('change', setField);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.token) refresh(); });
+
+/* ---------- views ---------- */
+function loginView() {
+  const code = S.step === 'code';
+  return `<div class="center" style="padding:0 18px;max-width:420px;margin:0 auto">
+    <h1 class="big">${esc(CFG.NAME)}</h1>
+    <p class="muted">${code ? 'Enter the 6-digit code we emailed to ' + esc(val('email')) + '.' : 'Sign in with the email address you were invited with. We’ll email you a code.'}</p>
+    ${code
+      ? `<label for="code">Sign-in code</label><input id="code" data-f="code" value="${esc(val('code'))}" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+         <div class="row" style="margin-top:14px"><button class="btn" data-a="verify" ${S.busy ? 'disabled' : ''}>Sign in</button><button class="btn alt" data-a="back">Use a different email</button></div>`
+      : `<label for="email">Email address</label><input id="email" data-f="email" value="${esc(val('email'))}" type="email" autocomplete="email" autocapitalize="none">
+         <div class="row" style="margin-top:14px"><button class="btn" data-a="sendCode" ${S.busy ? 'disabled' : ''}>Send code</button></div>`}
+  </div>`;
+}
+
+function dayMap() {
+  const m = {};
+  S.st.bookings.filter(b => (b.status === 'approved' || b.status === 'pending') && (S.filter === 'all' || b.propertyId === S.filter)).forEach(b => {
+    let d = b.start, n = 0;
+    while (d < b.end && n++ < 400) { (m[d] = m[d] || []).push(b); d = addDays(d, 1); }
+  });
+  return m;
+}
+function monthHtml(y, mo, map) {
+  const first = new Date(y, mo, 1), lead = (first.getDay() + 6) % 7, days = new Date(y, mo + 1, 0).getDate(), t = S.st.today;
+  let h = `<section class="mon"><h3>${first.toLocaleDateString('en-IE', { month: 'long', year: 'numeric' })}</h3><div class="grid">` +
+    ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<i class="dow">${x}</i>`).join('') + '<i></i>'.repeat(lead);
+  for (let d = 1; d <= days; d++) {
+    const ds = y + '-' + pad(mo + 1) + '-' + pad(d);
+    const bars = (map[ds] || []).map(b => `<b class="bar ${b.status}" style="--c:${esc(prop(b.propertyId).color)}"></b>`).join('');
+    h += `<button class="day${ds === t ? ' today' : ''}${ds < t ? ' past' : ''}${ds === S.day ? ' sel' : ''}" data-a="day" data-d="${ds}" aria-label="${fd(ds, true)}"><span>${d}</span><div class="bars">${bars}</div></button>`;
+  }
+  return h + '</div></section>';
+}
+function stayCard(b, showFam) {
+  const p = prop(b.propertyId);
+  return `<div class="stay" style="--c:${esc(p.color)}"><div class="row sp"><b>${esc(p.name)}</b><span class="tag ${b.status}">${b.status === 'pending' ? 'awaiting approval' : b.status}</span></div>
+    <div>${esc(range(b))}</div><div class="muted">${[showFam ? esc(b.familyName) : '', b.by ? 'requested by ' + esc(b.by) : '', b.guests && b.guests !== '0' ? esc(b.guests) + ' guests' : ''].filter(Boolean).join(' - ')}</div>
+    ${b.note ? `<div class="muted">“${esc(b.note)}”</div>` : ''}${b.adminNote ? `<div class="muted">Admin: ${esc(b.adminNote)}</div>` : ''}</div>`;
+}
+function homeView() {
+  const st = S.st, t = st.today, now = new Date(t + 'T12:00:00');
+  const chips = `<div class="chips"><button class="chip ${S.filter === 'all' ? 'on' : ''}" data-a="filter" data-v="all">Both homes</button>` +
+    st.properties.map(p => `<button class="chip ${S.filter === p.id ? 'on' : ''}" data-a="filter" data-v="${p.id}"><span class="dot" style="--c:${esc(p.color)}"></span>${esc(p.name)}</button>`).join('') + '</div>';
+  const ctl = `<div class="row sp" style="margin-bottom:10px">
+    <div class="seg"><button class="${S.mode === 'cal' ? 'on' : ''}" data-a="mode" data-v="cal">Calendar</button><button class="${S.mode === 'list' ? 'on' : ''}" data-a="mode" data-v="list">List</button></div>
+    <div class="seg"><button class="${S.months === 6 ? 'on' : ''}" data-a="months" data-v="6">6 months</button><button class="${S.months === 12 ? 'on' : ''}" data-a="months" data-v="12">12 months</button></div></div>`;
+  let body = '';
+  if (S.mode === 'cal') {
+    const map = dayMap();
+    if (S.day) {
+      const list = (map[S.day] || []);
+      body += `<div class="card"><h2>${esc(fd(S.day, true))}</h2>${list.length ? list.map(b => stayCard(b, true)).join('') : '<p class="muted">Free at the moment.</p>'}</div>`;
+    }
+    body += `<div class="legend"><span class="row" style="gap:6px"><b class="bar" style="--c:var(--ink)"></b>approved</span><span class="row" style="gap:6px"><b class="bar pending" style="--c:var(--ink)"></b>awaiting approval</span></div>`;
+    for (let i = 0; i < S.months; i++) { const d = new Date(now.getFullYear(), now.getMonth() + i, 1); body += monthHtml(d.getFullYear(), d.getMonth(), map); }
+  } else {
+    const end = iso(new Date(now.getFullYear(), now.getMonth() + S.months, 1));
+    const list = st.bookings.filter(b => (b.status === 'approved' || b.status === 'pending') && b.end >= t && b.start < end && (S.filter === 'all' || b.propertyId === S.filter)).sort((a, b) => a.start < b.start ? -1 : 1);
+    body = `<div class="card">${list.length ? list.map(b => stayCard(b, true)).join('') : '<p class="muted">Nothing booked in this period. Both homes are free.</p>'}</div>`;
+  }
+  return chips + ctl + body;
+}
+
+function requestView() {
+  const st = S.st, f = S.form, pid = f.pid || st.properties[0].id;
+  const probe = { propertyId: pid, start: f.start, end: f.end, id: '' };
+  let hint = '';
+  if (f.start && f.end && f.end > f.start) {
+    const a = clashes(probe, 'approved'), p = clashes(probe, 'pending');
+    hint = a.length ? `<p class="err">Overlaps an approved stay (${esc(fd(a[0].start))} to ${esc(fd(a[0].end))}). Choose other dates.</p>`
+      : p.length ? `<p class="warn">Another family has asked for overlapping dates. Admins will decide.</p>`
+      : `<p class="muted">${nn(f.start, f.end)} nights. These dates are free.</p>`;
+  }
+  const admin = isAdmin();
+  return `<div class="card"><h2>Request a stay</h2>
+    <label for="pid">Property</label><select id="pid" data-f="pid" data-r="1">${st.properties.map(p => `<option value="${p.id}" ${p.id === pid ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
+    <div class="row" style="gap:10px"><div class="grow"><label for="start">Check-in</label><input id="start" type="date" data-f="start" data-r="1" min="${st.today}" value="${esc(f.start || '')}"></div>
+    <div class="grow"><label for="end">Check-out</label><input id="end" type="date" data-f="end" data-r="1" min="${f.start ? addDays(f.start, 1) : st.today}" value="${esc(f.end || '')}"></div></div>
+    ${hint}
+    <label for="guests">Number of guests</label><input id="guests" type="number" inputmode="numeric" min="0" data-f="guests" value="${esc(f.guests || '')}">
+    <label for="note">Note for the admins (optional)</label><textarea id="note" data-f="note">${esc(f.note || '')}</textarea>
+    ${admin ? `<label for="fam">Book for</label><select id="fam" data-f="fam">${st.families.map(x => `<option value="${x.id}" ${(f.fam || st.me.familyId) === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+      <label style="font-weight:500"><input type="checkbox" data-f="now" ${f.now ? 'checked' : ''}>Approve immediately</label>` : `<p class="muted">Booking for ${esc(st.me.familyName)}.</p>`}
+    <div class="row" style="margin-top:12px"><button class="btn" data-a="request" ${S.busy ? 'disabled' : ''}>${admin && f.now ? 'Book stay' : 'Send request'}</button></div></div>`;
+}
+
+function familyView() {
+  const st = S.st, t = st.today;
+  const mine = st.bookings.filter(b => b.mine).sort((a, b) => a.start < b.start ? 1 : -1);
+  const up = mine.filter(b => b.end >= t), past = mine.filter(b => b.end < t);
+  const card = b => `<div>${stayCard(b, false)}${(b.status === 'pending' || b.status === 'approved') && b.end >= t ? `<button class="btn bad sm" data-a="cancel" data-id="${b.id}" style="margin:-4px 0 12px 15px">Cancel stay</button>` : ''}</div>`;
+  const perm = 'Notification' in window ? Notification.permission : 'unsupported';
+  const on = perm === 'granted' && !!localStorage.getItem('hh_push');
+  const pushCard = `<div class="card"><h2>Notifications</h2>
+    ${on ? '<p class="muted">On for this device.</p><div class="row"><button class="btn alt sm" data-a="pushTest">Send a test</button><button class="btn alt sm" data-a="pushOff">Turn off</button></div>'
+      : `<p class="muted">Get a notification when a request is decided${isAdmin() ? ' or a new request arrives' : ''}.</p>
+         ${isIOS && !standalone ? '<p class="warn">On iPhone: tap Share, then Add to Home Screen, open the app from the new icon, then come back here.</p>' : ''}
+         ${perm === 'denied' ? '<p class="err">Notifications are blocked in your phone’s settings for this app.</p>' : ''}
+         <button class="btn" data-a="pushOn">Turn on notifications</button>`}</div>`;
+  return `<div class="card"><h2>${esc(st.me.familyName)}</h2><p class="muted">Signed in as ${esc(st.me.name)} (${esc(st.me.email)}).</p><button class="btn alt sm" data-a="logout">Sign out</button></div>` +
+    pushCard + `<h2 style="margin:16px 0 8px">Upcoming stays</h2><div class="card">${up.length ? up.map(card).join('') : '<p class="muted">No upcoming stays. Request one from the Request tab.</p>'}</div>` +
+    (past.length ? `<h2 style="margin:16px 0 8px">Past stays</h2><div class="card">${past.map(card).join('')}</div>` : '');
+}
+
+function adminView() {
+  const st = S.st, t = st.today;
+  const tabs = [['requests', 'Requests'], ['bookings', 'Bookings'], ['families', 'Families'], ['props', 'Homes']];
+  let h = `<div class="chips">${tabs.map(([k, l]) => `<button class="chip ${S.sub === k ? 'on' : ''}" data-a="sub" data-v="${k}">${l}</button>`).join('')}</div>`;
+  if (S.sub === 'requests') {
+    const pend = st.bookings.filter(b => b.status === 'pending').sort((a, b) => a.start < b.start ? -1 : 1);
+    h += pend.length ? pend.map(b => {
+      const ca = clashes(b, 'approved'), cp = clashes(b, 'pending');
+      return `<div class="card">${stayCard(b, true)}
+        ${ca.length ? `<p class="err">Overlaps an approved stay by ${esc(ca[0].familyName)}.</p>` : ''}
+        ${cp.length ? `<p class="warn">Also requested by ${cp.map(x => esc(x.familyName)).join(', ')} for overlapping dates.</p>` : ''}
+        <label for="note_${b.id}">Note to the family (optional)</label><input id="note_${b.id}" data-f="note_${b.id}" value="${esc(val('note_' + b.id))}">
+        <div class="row" style="margin-top:10px"><button class="btn ok" data-a="decide" data-id="${b.id}" data-dec="approve" ${ca.length || S.busy ? 'disabled' : ''}>Approve</button>
+        <button class="btn bad" data-a="decide" data-id="${b.id}" data-dec="decline" ${S.busy ? 'disabled' : ''}>Decline</button></div></div>`;
+    }).join('') : '<div class="card"><p class="muted">No requests waiting. You’re all caught up.</p></div>';
+  } else if (S.sub === 'bookings') {
+    const list = st.bookings.filter(b => S.filter === 'all' || b.propertyId === S.filter).sort((a, b) => a.start < b.start ? 1 : -1);
+    h += `<label for="bf">Show</label><select id="bf" data-f="bf" data-r="1" onchange="S.filter=this.value">
+      <option value="all">Both homes</option>${st.properties.map(p => `<option value="${p.id}" ${S.filter === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select><div style="height:10px"></div>` +
+      (list.length ? list.map(b => `<div class="card">${stayCard(b, true)}${(b.status === 'pending' || b.status === 'approved') && b.end >= t ? `<button class="btn bad sm" data-a="cancel" data-id="${b.id}">Cancel stay</button>` : ''}</div>`).join('') : '<div class="card"><p class="muted">No bookings yet.</p></div>');
+  } else if (S.sub === 'families') {
+    h += `<div class="card"><h2>Add a family</h2><div class="row"><input class="grow" data-f="newFam" placeholder="Family name" value="${esc(val('newFam'))}" aria-label="Family name"><button class="btn" data-a="addFamily">Add family</button></div></div>`;
+    h += st.families.map(f => {
+      const mem = st.members.filter(m => m.familyId === f.id);
+      return `<div class="card"><div class="row sp"><h2 style="margin:0">${esc(f.name)}</h2><div class="row"><button class="btn alt sm" data-a="renameFamily" data-id="${f.id}" data-name="${esc(f.name)}">Rename</button>${f.id === st.me.familyId ? '' : `<button class="btn bad sm" data-a="removeFamily" data-id="${f.id}" data-name="${esc(f.name)}">Remove</button>`}</div></div>
+      ${mem.map(m => `<div style="padding:10px 0;border-top:1px solid var(--line)"><div class="row sp"><div class="grow"><b>${esc(m.name)}</b> ${m.role === 'admin' ? '<span class="tag approved">admin</span>' : ''} ${m.push ? '<span class="tag pending">push on</span>' : ''}<div class="muted">${esc(m.email)}</div></div></div>
+        <div class="row" style="margin-top:6px"><button class="btn alt sm" data-a="setRole" data-email="${esc(m.email)}" data-role="${m.role === 'admin' ? 'member' : 'admin'}">${m.role === 'admin' ? 'Remove admin' : 'Make admin'}</button>
+        <button class="btn alt sm" data-a="welcome" data-email="${esc(m.email)}">Resend welcome</button>
+        ${m.email === st.me.email ? '' : `<button class="btn bad sm" data-a="removeMember" data-email="${esc(m.email)}" data-name="${esc(m.name)}">Remove</button>`}</div></div>`).join('')}
+      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:6px"><b>Add a member</b>
+        <input data-f="mn_${f.id}" placeholder="Name" value="${esc(val('mn_' + f.id))}" aria-label="Name" style="margin-top:6px">
+        <input data-f="me_${f.id}" placeholder="Email" type="email" autocapitalize="none" value="${esc(val('me_' + f.id))}" aria-label="Email" style="margin-top:6px">
+        <label style="font-weight:500"><input type="checkbox" data-f="mr_${f.id}" ${val('mr_' + f.id) ? 'checked' : ''}>Make this person an admin</label>
+        <button class="btn sm" data-a="addMember" data-f="${f.id}">Add member</button></div></div>`;
+    }).join('');
+  } else {
+    h += st.properties.map(p => propForm(p)).join('') + propForm({ id: 'new', name: '', color: '#1f7a8c', notes: '' });
+  }
+  return h;
+}
+function propForm(p) {
+  const n = p.id === 'new';
+  return `<div class="card"><h2>${n ? 'Add a home' : esc(p.name)}</h2>
+    <label for="pn_${p.id}">Name</label><input id="pn_${p.id}" data-f="pn_${p.id}" value="${esc(val('pn_' + p.id, p.name))}">
+    <label for="pc_${p.id}">Calendar colour</label><input id="pc_${p.id}" type="color" data-f="pc_${p.id}" value="${esc(val('pc_' + p.id, p.color))}">
+    <label for="pt_${p.id}">Notes</label><input id="pt_${p.id}" data-f="pt_${p.id}" value="${esc(val('pt_' + p.id, p.notes))}">
+    <div class="row" style="margin-top:10px"><button class="btn sm" data-a="saveProp" data-id="${p.id}">${n ? 'Add home' : 'Save changes'}</button>${n ? '' : `<button class="btn bad sm" data-a="delProp" data-id="${p.id}">Delete</button>`}</div></div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const keepScroll = window.scrollY;
+  if (!S.token) { app.innerHTML = loginView(); return; }
+  if (S.loading || !S.st) { app.innerHTML = '<div class="center" style="text-align:center"><p class="muted">Loading…</p></div>'; return; }
+  const st = S.st, pend = isAdmin() ? st.bookings.filter(b => b.status === 'pending').length : 0;
+  const views = { home: homeView, request: requestView, family: familyView, admin: adminView };
+  const nav = [['home', 'Calendar'], ['request', 'Request'], ['family', 'My family']].concat(isAdmin() ? [['admin', 'Admin']] : []);
+  app.innerHTML = `<header><h1>${esc(st.appName || CFG.NAME)}</h1><small>${esc(st.me.name)}</small></header>
+    <main>${views[S.view]()}</main>
+    <nav>${nav.map(([k, l]) => `<button class="${S.view === k ? 'on' : ''}" data-a="nav" data-v="${k}">${l}${k === 'admin' && pend ? '<i>' + pend + '</i>' : ''}</button>`).join('')}</nav>`;
+  window.scrollTo(0, keepScroll);
+}
+
+/* ---------- start ---------- */
+(async function start() {
+  render();
+  if (S.token) {
+    try { await api('init'); syncPush(); } catch (e) { if (S.token) toast(e.message, true); }
+    S.loading = false; render();
+  }
+})();
+</script>
+</body>
+</html>

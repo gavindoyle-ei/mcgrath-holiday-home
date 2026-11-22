@@ -1,0 +1,8 @@
+{
+  "name": "family-holiday-homes",
+  "private": true,
+  "scripts": {
+    "test": "node tests/backend.test.js && node tests/frontend.smoke.js"
+  },
+  "devDependencies": { "jsdom": "^24.0.0" }
+}
