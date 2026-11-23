@@ -30,16 +30,16 @@ Files: `Code.gs` (backend, repo root). Frontend lives in `docs/`: `index.html`, 
 2. My family, Turn on notifications. On iPhone first: Safari, Share, Add to Home Screen, open from the icon.
 3. Admin, Homes: rename the two placeholder homes, add their address, upload a photo and pick colours (add more homes here too if needed - the first photo upload will trigger a one-off Google Drive permission prompt, same as step 1.5). Admin, Families: add families and members (add both owners as admins here). Each person gets a welcome email. Share the link.
 
-## Faster re-deploys (clasp, optional)
-Once the script exists (step 1), you can skip re-pasting into the Apps Script editor for future `Code.gs` changes:
+## Faster re-deploys (clasp) - already set up in this repo
+This repo is already wired up for `clasp`, Google's Apps Script CLI, so future `Code.gs` changes don't need re-pasting into the browser editor:
 ```
-npm i -g @google/clasp
-clasp login                        # opens a browser, your Google account
-clasp clone <SCRIPT_ID>            # SCRIPT_ID from Project Settings in the Apps Script editor
-clasp push                         # uploads Code.gs
-clasp deploy                       # creates a new deployment version (or use the editor's Manage deployments the first time)
+npm i -g @google/clasp                            # one-time, if not already installed
+clasp login                                       # one-time, opens a browser, your Google account
+clasp push                                        # uploads Code.gs + appsscript.json (see .claspignore)
+clasp deployments                                 # lists deployment IDs; find the one that is your live web app
+clasp deploy -i <DEPLOYMENT_ID> -d "description"  # ships a new version to that *same* URL
 ```
-`clasp login`/`clone` need a real browser session under the owning Google account, so this step is still yours to run once; after that, pushing updates is one command.
+`clasp login` needs a real browser session under the owning Google account (Enable the Apps Script API first at script.google.com/home/usersettings) - that step is yours to run once; after that, pushing updates is two commands and the live URL never changes. `.clasp.json` (which has the project's script ID) is machine-local and gitignored - if you set this up on another machine, re-run `clasp login` then `clasp clone <SCRIPT_ID>` (the Script ID is in Project Settings in the Apps Script editor) to recreate it.
 
 ## Good to know
 - The Firebase config and the script URL are not secrets. Access is controlled by the emailed codes and the member list.
