@@ -59,6 +59,7 @@ const call=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}));
  const decisionMail=mails.find(m=>/^Stay approved/.test(m.subject));
  ok('decision mail reply-to is deciding admin',!!decisionMail&&decisionMail.replyTo==='gav@x.ie');
  ok('decision mail names deciding admin',/Admin/.test(decisionMail.htmlBody));
+ ok('decision mail cc\'s all admins',decisionMail.to.includes('gav@x.ie'));
  ok('overlap blocked',/overlap/i.test(call({action:'requestStay',token:t,propertyId:p,start:d(12),end:d(14)}).error||''));
  ok('approval mail to requester',mails.some(m=>/approved/i.test(m.subject)&&m.to.includes('dee@x.ie')));
  const png='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';

@@ -251,7 +251,7 @@ const ACTIONS = {
     put_('Bookings', 'id', bk);
     const prop = rows_('Properties').find(p => p.id === bk.propertyId) || { name: 'the property' };
     const when = fmt_(bk.start) + ' to ' + fmt_(bk.end);
-    const to = familyEmails_(bk.familyId);
+    const to = familyEmails_(bk.familyId).concat(adminEmails_());
     if (to.indexOf(bk.by) < 0) to.push(bk.by);
     notify_(to, approve ? 'Stay approved: ' + prop.name : 'Stay declined: ' + prop.name,
       prop.name + ', ' + when,
