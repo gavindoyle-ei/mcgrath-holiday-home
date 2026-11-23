@@ -1,6 +1,6 @@
 // Paste your own values here. None of these are secrets (the service account key stays in Apps Script).
 self.CFG = {
-  NAME: 'Family Holiday Homes',
+  NAME: 'McGrath Holiday Home',
   API: 'https://script.google.com/macros/s/AKfycbx3GZ3_TFxz2V0uu6ZheDodSG3cQUB96Zt2CldehiOuuqOp1sE9a5ud6rxuowTIqbzguA/exec',
   VAPID: 'BPCW5Lys9ZbnxGCevGsBR8qAzw0A6FCT5jXz7fFJ7H36qasVat8nhK5zYIx94SyZQjvCu5vir_daXPBKlfZneTM',
   FIREBASE: {

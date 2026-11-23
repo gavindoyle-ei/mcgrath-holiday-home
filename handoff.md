@@ -1,4 +1,4 @@
-# Handoff: Family Holiday Homes
+# Handoff: McGrath Holiday Home
 
 Read this first. Then read `SETUP.md` (deployment steps) and the code. Language in docs: plain hyphens, no em dashes.
 

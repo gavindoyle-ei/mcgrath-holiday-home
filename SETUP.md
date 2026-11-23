@@ -1,4 +1,4 @@
-# Family Holiday Homes - setup (about 45 minutes, no card, no domain)
+# McGrath Holiday Home - setup (about 45 minutes, no card, no domain)
 
 Files: `Code.gs` (backend, repo root). Frontend lives in `docs/`: `index.html`, `config.js`, `manifest.json`, `firebase-messaging-sw.js`, three `icon-*.png`.
 

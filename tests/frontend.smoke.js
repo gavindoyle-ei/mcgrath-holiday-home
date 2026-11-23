@@ -2,7 +2,7 @@ const {JSDOM}=require('jsdom');const fs=require('fs');
 let html=fs.readFileSync(require('path').join(__dirname,'..','docs','index.html'),'utf8');
 html=html.replace(/<script src="[^"]+"><\/script>/g,'');
 const cfg="self.CFG={NAME:'T',API:'x',VAPID:'v',FIREBASE:{}};";
-const st=(role)=>({me:{email:'a@b.c',name:'Gav',role,familyId:'f1',familyName:'Fam One'},today:'2026-11-22',appName:'Family Holiday Homes',
+const st=(role)=>({me:{email:'a@b.c',name:'Gav',role,familyId:'f1',familyName:'Fam One'},today:'2026-11-22',appName:'McGrath Holiday Home',
  properties:[{id:'p1',name:'Beach',color:'#1f7a8c',notes:''},{id:'p2',name:'Mountain',color:'#c9822b',notes:''}],
  families:[{id:'f1',name:'Fam One'},{id:'f2',name:'Fam Two'}],
  members:[{email:'a@b.c',name:'Gav',familyId:'f1',role:'admin',push:true},{email:'d@e.f',name:'Dee',familyId:'f2',role:'member',push:false}],
