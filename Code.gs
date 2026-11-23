@@ -273,8 +273,8 @@ const ACTIONS = {
     const prop = rows_('Properties').find(p => p.id === bk.propertyId) || { name: 'the property' };
     const msg = prop.name + ', ' + fmt_(bk.start) + ' to ' + fmt_(bk.end);
     if (admin) {
-      notify_(familyEmails_(bk.familyId), 'Stay cancelled: ' + prop.name, msg,
-        tpl_('Stay cancelled', '<p>An admin cancelled <b>' + esc_(msg) + '</b>.</p>', true));
+      notify_(familyEmails_(bk.familyId).concat(adminEmails_()), 'Stay cancelled: ' + prop.name, msg,
+        tpl_('Stay cancelled', '<p>An admin (' + esc_(me.name) + ') cancelled <b>' + esc_(msg) + '</b>.</p>', true));
     } else if (wasApproved) {
       const fam = rows_('Families').find(f => f.id === bk.familyId) || { name: '' };
       notify_(adminEmails_(), 'Stay cancelled', me.name + ' cancelled ' + msg,

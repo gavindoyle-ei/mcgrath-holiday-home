@@ -74,6 +74,7 @@ const call=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}));
  ok('remove photo',call({action:'saveProperty',token:t,id:p,name:'Beach House',color:'#1f7a8c',removePhoto:true}).ok);
  s=call({action:'init',token:t}).state; ok('photo cleared',s.properties.find(x=>x.id===p).photo==='');
  const o=call({action:'init',token:t2}).state; ok('member sees only own details',o.bookings[0].guests==='3'&&o.families.length===1);
+ ok('admin cancel notifies family and all admins',call({action:'cancelBooking',token:t,id:bid}).ok&&mails.some(m=>/^Stay cancelled/.test(m.subject)&&m.to.includes('dee@x.ie')&&m.to.includes('gav@x.ie')));
  ok('cannot remove last admin',call({action:'setRole',token:t,email:'gav@x.ie',role:'member'}).ok===false);
  ok('remove member kills session',call({action:'removeMember',token:t,email:'dee@x.ie'}).ok&&call({action:'init',token:t2}).error==='unauthorized');
  ok('date text preserved',typeof sheets.Bookings.data[1][4]==='string');
